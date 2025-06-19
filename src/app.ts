@@ -1,9 +1,15 @@
 import Koa from 'koa';
 import Router from 'koa-router';
 import 'dotenv/config';
+import bodyParser from 'koa-bodyparser';
+import investmentRoutes from './routes/investments';
 
 const app = new Koa();
 const router = new Router();
+
+router.use(investmentRoutes.routes());
+
+app.use(bodyParser());
 
 router.get('/', async (ctx) => {
 	ctx.body = 'Hello TypeScript + Koa!';
