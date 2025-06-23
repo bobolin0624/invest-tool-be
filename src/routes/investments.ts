@@ -13,7 +13,7 @@ router.get('/investments', async (ctx) => {
     }));
     ctx.body = {
       status: 'ok',
-      data: investments
+      data: investments,
     };
   } catch (error: any) {
     console.error(error.stack);
