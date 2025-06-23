@@ -37,7 +37,24 @@ router.post('/investments', async (ctx) => {
 router.patch('/investments/:id', async (ctx) => {
   console.log('upload investments');
   const investmentId = ctx.params.id
-  db.collection("users").doc(investmentId).update({foo: "bar"});
+  const updateData = ctx.request.body as Object;
+  const patchInvestment = {
+    ...updateData,
+    updatedAt: new Date().toISOString(),
+  }
+  db.collection('investments').doc(investmentId).update(patchInvestment);
+  ctx.body = {
+    status: 'ok',
+  }
+})
+
+router.delete('/investments/:id', async (ctx) => {
+  console.log('delete investment');
+  const investmentId = ctx.params.id;
+  db.collection('investments').doc(investmentId).delete();
+  ctx.body = {
+    status: 'ok',
+  };
 })
 
 export default router;
