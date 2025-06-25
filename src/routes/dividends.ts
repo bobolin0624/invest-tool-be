@@ -3,9 +3,28 @@ import { db } from "../firebase";
 
 const router = new Router();
 
+/**
+ * @swagger
+ * /investments/{id}/dividends:
+ *  get:
+ *    summary: Get all dividends of investment
+ *    tags: 
+ *    - Dividends
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        description: investment id
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: 成功取得歷史股利
+ */
 router.get('/investments/:id/dividends',
   async (ctx) => {
     try {
+      console.log('get dividends');
       const investmentId = ctx.params.id;
       const dividendsRef = db.collection('dividends');
       const snapshot = await dividendsRef.where('investmentId', '==', investmentId).get();
@@ -30,6 +49,40 @@ router.get('/investments/:id/dividends',
   }
 )
 
+/**
+ * @swagger
+ * /investments/{id}/dividends:
+ *  post:
+ *    summary: Create a new dividend
+ *    tags: 
+ *    - Dividends
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        description: investment id
+ *        required: true
+ *        schema:
+ *          type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - date
+ *              - value
+ *            properties:
+ *              date:
+ *                type: Timestamp (UTC)
+ *                example: "2025/6/12T16:00:00Z"
+ *              value:
+ *                type: number
+ *                example: 100000
+ *    responses:
+ *      200:
+ *        description: 成功新增一筆股利紀錄
+ */
 router.post('/investments/:id/dividends',
   async (ctx) => {
     try {
@@ -57,6 +110,37 @@ router.post('/investments/:id/dividends',
   }
 )
 
+/**
+ * @swagger
+ * /dividends/{id}:
+ *  patch:
+ *    summary: Update dividend by id
+ *    tags: 
+ *    - Dividends
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        description: dividend id
+ *        required: true
+ *        schema:
+ *          type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+  *              date:
+ *                type: Timestamp (UTC)
+ *                example: "2025/6/12T16:00:00Z"
+ *              value:
+ *                type: number
+ *                example: 100000
+ *    responses:
+ *      200:
+ *        description: 成功編輯股利紀錄
+ */
 router.patch('/dividends/:id', async (ctx) => {
   try {
     console.log('upload dividends');
@@ -76,6 +160,25 @@ router.patch('/dividends/:id', async (ctx) => {
   }
 })
 
+
+/**
+ * @swagger
+ * /dividends/{id}:
+ *  patch:
+ *    summary: Delete dividend by id
+ *    tags: 
+ *    - Dividends
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        description: dividend id
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: 成功刪除股利紀錄
+ */
 router.delete('/dividends/:id', async (ctx) => {
   try {
     console.log('delete dividend');
