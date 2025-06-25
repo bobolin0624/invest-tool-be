@@ -150,7 +150,7 @@ router.patch('/dividends/:id', async (ctx) => {
       ...updateData,
       updatedAt: new Date().toISOString(),
     }
-    db.collection('dividends').doc(dividendsId).update(patchDividend);
+    await db.collection('dividends').doc(dividendsId).update(patchDividend);
     ctx.body = {
       status: 'ok',
     }
@@ -160,11 +160,10 @@ router.patch('/dividends/:id', async (ctx) => {
   }
 })
 
-
 /**
  * @swagger
  * /dividends/{id}:
- *  patch:
+ *  delete:
  *    summary: Delete dividend by id
  *    tags: 
  *    - Dividends
@@ -183,7 +182,7 @@ router.delete('/dividends/:id', async (ctx) => {
   try {
     console.log('delete dividend');
     const dividendId = ctx.params.id;
-    db.collection('dividends').doc(dividendId).delete();
+    await db.collection('dividends').doc(dividendId).delete();
     ctx.body = {
       status: 'ok',
     };
