@@ -1,5 +1,6 @@
 import Koa from 'koa';
 import Router from 'koa-router';
+import cors from '@koa/cors';
 import 'dotenv/config';
 import bodyParser from 'koa-bodyparser';
 import investmentRoutes from './routes/investments';
@@ -22,6 +23,7 @@ router.get('/', async (ctx) => {
 	ctx.body = 'Hello TypeScript + Koa!';
 });
 
+app.use(cors())
 app.use(router.routes());
 app.use(router.allowedMethods());
 
