@@ -13,3 +13,4 @@ node_modules
 *.log
 *.gz
 .env
+service_account.json
