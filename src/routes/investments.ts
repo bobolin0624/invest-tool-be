@@ -75,13 +75,15 @@ router.post('/investments', async (ctx) => {
       ...createData,
       createdAt: new Date().toISOString(),
     }
-    const createdResult = await db.collection('investments').add(newInvestment);
-    ctx.body = {
-      status: 'ok',
-      data: {
-        id: createdResult.id,
-        deletedAt: null,
-        ...newInvestment,
+    const createdResult = await investmentRepository.createInvestment(newInvestment);
+    if (createdResult) {
+      ctx.body = {
+        status: 'ok',
+        data: {
+          id: createdResult.id,
+          deletedAt: null,
+          ...newInvestment,
+        }
       }
     }
   } catch (error: any) {
@@ -138,7 +140,8 @@ router.patch('/investments/:id', async (ctx) => {
       ...updateData,
       updatedAt: new Date().toISOString(),
     }
-    await db.collection('investments').doc(investmentId).update(patchInvestment);
+    await investmentRepository.patchInvestment(investmentId, patchInvestment);
+
     ctx.body = {
       status: 'ok',
     }

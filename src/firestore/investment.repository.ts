@@ -16,5 +16,28 @@ export const investmentRepository = {
     } catch (error: any) {
       console.error(`getAllActiveInvestment error: ${error.stack}`)
     }
+  },
+  createInvestment: async (createData: any) => {
+    try {
+      const createdResult = await investCollection.add(createData);
+      return createdResult;
+    } catch (error: any) {
+      console.error(`createInvestment error: ${error.stack}`)
+    }
+  },
+  patchInvestment: async (investmentId: string, updateData: any) => {
+    try {
+      await investCollection.doc(investmentId).update(updateData);
+      return
+    } catch (error: any) {
+      console.error(`patchInvestment error: ${error.stack}`)
+    }
+  },
+  softDeleteInvestment: async (investmentId: string) => {
+    try {
+      
+    } catch (error: any) {
+      console.error(`softDeleteInvestment error: ${error.stack}`)
+    }
   }
 }
