@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { db } from "../firebase";
+import { db } from "../firestore/firebase";
 
 const router = new Router();
 
@@ -24,7 +24,6 @@ const router = new Router();
 router.get('/investments/:id/dividends',
   async (ctx) => {
     try {
-      console.log('get dividends');
       const investmentId = ctx.params.id;
       const dividendsRef = db.collection('dividends');
       const snapshot = await dividendsRef.where('investmentId', '==', investmentId).get();
@@ -86,7 +85,6 @@ router.get('/investments/:id/dividends',
 router.post('/investments/:id/dividends',
   async (ctx) => {
     try {
-      console.log('create dividends');
       // fields: investmentId, value, date
       const investmentId = ctx.params.id;
       const createData = ctx.request.body as Object;
@@ -143,7 +141,6 @@ router.post('/investments/:id/dividends',
  */
 router.patch('/dividends/:id', async (ctx) => {
   try {
-    console.log('upload dividends');
     const dividendsId = ctx.params.id;
     const updateData = ctx.request.body as Object;
     const patchDividend = {
@@ -180,7 +177,6 @@ router.patch('/dividends/:id', async (ctx) => {
  */
 router.delete('/dividends/:id', async (ctx) => {
   try {
-    console.log('delete dividend');
     const dividendId = ctx.params.id;
     await db.collection('dividends').doc(dividendId).delete();
     ctx.body = {

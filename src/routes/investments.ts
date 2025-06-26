@@ -1,5 +1,6 @@
 import Router from "koa-router";
-import { db } from "../firebase";
+import { db } from "../firestore/firebase";
+import { investmentRepository } from "../firestore/investment.repository";
 
 const router = new Router();
 
@@ -16,12 +17,7 @@ const router = new Router();
  */
 router.get('/investments', async (ctx) => {
   try {
-    console.log('get investments');
-    const snapshot = await db.collection('investments').get();
-    const investments = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const investments = await investmentRepository.getAllActiveInvestment();
     ctx.body = {
       status: 'ok',
       data: investments,
@@ -73,7 +69,6 @@ router.get('/investments', async (ctx) => {
  */
 router.post('/investments', async (ctx) => {
   try {
-    console.log('create investments');
     // fields: userId, name, cost, type, value, shares
     const createData = ctx.request.body as Object;
     const newInvestment = {
@@ -85,6 +80,7 @@ router.post('/investments', async (ctx) => {
       status: 'ok',
       data: {
         id: createdResult.id,
+        deletedAt: null,
         ...newInvestment,
       }
     }
@@ -93,7 +89,6 @@ router.post('/investments', async (ctx) => {
     ctx.throw(500, 'Failed to create investment');
   }
 })
-
 
 /**
  * @swagger
@@ -137,7 +132,6 @@ router.post('/investments', async (ctx) => {
  */
 router.patch('/investments/:id', async (ctx) => {
   try {
-    console.log('upload investments');
     const investmentId = ctx.params.id
     const updateData = ctx.request.body as Object;
     const patchInvestment = {
@@ -174,9 +168,13 @@ router.patch('/investments/:id', async (ctx) => {
  */
 router.delete('/investments/:id', async (ctx) => {
   try {
-    console.log('delete investment');
     const investmentId = ctx.params.id;
-    await db.collection('investments').doc(investmentId).delete();
+    // TODO 一併刪除 investments 底下的 dividends
+    // trash 做軟刪除
+    await db.collection('investments').doc(investmentId).update({
+      deletedAt: new Date().toISOString(),
+    });
+
     ctx.body = {
       status: 'ok',
     };
