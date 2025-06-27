@@ -1,5 +1,7 @@
 import Router from "koa-router";
-import { db } from "../firebase";
+import { db } from "../firestore/firebase";
+import { investmentRepository } from "../firestore/investment.repository";
+import { dividendRepository } from "../firestore/dividend.repository";
 
 const router = new Router();
 
@@ -16,12 +18,7 @@ const router = new Router();
  */
 router.get('/investments', async (ctx) => {
   try {
-    console.log('get investments');
-    const snapshot = await db.collection('investments').get();
-    const investments = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const investments = await investmentRepository.getAllActiveInvestment();
     ctx.body = {
       status: 'ok',
       data: investments,
@@ -73,19 +70,21 @@ router.get('/investments', async (ctx) => {
  */
 router.post('/investments', async (ctx) => {
   try {
-    console.log('create investments');
     // fields: userId, name, cost, type, value, shares
     const createData = ctx.request.body as Object;
     const newInvestment = {
       ...createData,
       createdAt: new Date().toISOString(),
     }
-    const createdResult = await db.collection('investments').add(newInvestment);
-    ctx.body = {
-      status: 'ok',
-      data: {
-        id: createdResult.id,
-        ...newInvestment,
+    const createdResult = await investmentRepository.createInvestment(newInvestment);
+    if (createdResult) {
+      ctx.body = {
+        status: 'ok',
+        data: {
+          id: createdResult.id,
+          deletedAt: null,
+          ...newInvestment,
+        }
       }
     }
   } catch (error: any) {
@@ -93,7 +92,6 @@ router.post('/investments', async (ctx) => {
     ctx.throw(500, 'Failed to create investment');
   }
 })
-
 
 /**
  * @swagger
@@ -137,14 +135,14 @@ router.post('/investments', async (ctx) => {
  */
 router.patch('/investments/:id', async (ctx) => {
   try {
-    console.log('upload investments');
     const investmentId = ctx.params.id
     const updateData = ctx.request.body as Object;
     const patchInvestment = {
       ...updateData,
       updatedAt: new Date().toISOString(),
     }
-    await db.collection('investments').doc(investmentId).update(patchInvestment);
+    await investmentRepository.patchInvestment(investmentId, patchInvestment);
+
     ctx.body = {
       status: 'ok',
     }
@@ -174,9 +172,9 @@ router.patch('/investments/:id', async (ctx) => {
  */
 router.delete('/investments/:id', async (ctx) => {
   try {
-    console.log('delete investment');
     const investmentId = ctx.params.id;
-    await db.collection('investments').doc(investmentId).delete();
+    await investmentRepository.softDeleteInvestment(investmentId);
+    await dividendRepository.softDeleteDividendsByInvestId(investmentId);
     ctx.body = {
       status: 'ok',
     };
