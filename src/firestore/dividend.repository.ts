@@ -17,6 +17,7 @@ export const dividendRepository = {
       return dividends;
     } catch (error: any) {
       console.error(`getActiveDividendsByInvestId error: ${error.stack}`);
+      throw new Error('Failed to fetch dividends');
     }
   },
   createDividend: async (createData: any) => {
@@ -25,6 +26,7 @@ export const dividendRepository = {
       return createdResult
     } catch (error: any) {
       console.error(`createDividend error: ${error.stack}`);
+      throw new Error('Failed to create dividend');
     }
   },
   updateDividend: async (dividendsId: string, updateData: any) => {
@@ -33,6 +35,7 @@ export const dividendRepository = {
       return;
     } catch (error: any) {
       console.error(`updateDividend error: ${error.stack}`);
+      throw new Error('Failed to update dividend');
     }
   },
   softDeleteDividendById: async (dividendId: string) => {
@@ -42,6 +45,7 @@ export const dividendRepository = {
       })
     } catch (error: any) {
       console.error(`softDeleteDividendById error: ${error.stack}`);
+      throw new Error('Failed to delete dividend');
     }
   },
   softDeleteDividendsByInvestId: async (investmentId: string) => {
@@ -60,6 +64,7 @@ export const dividendRepository = {
       return;
     } catch (error: any) {
       console.error(`softDeleteDividendsByInvestId error: ${error.stack}`);
+      throw new Error('Failed to delete dividends');
     }
   }
 }

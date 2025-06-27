@@ -14,7 +14,8 @@ export const investmentRepository = {
       }));
       return investments;
     } catch (error: any) {
-      console.error(`getAllActiveInvestment error: ${error.stack}`)
+      console.error(`getAllActiveInvestment error: ${error.stack}`);
+      throw new Error('Failed to fetch investments');
     }
   },
   createInvestment: async (createData: any) => {
@@ -22,7 +23,8 @@ export const investmentRepository = {
       const createdResult = await investCollection.add(createData);
       return createdResult;
     } catch (error: any) {
-      console.error(`createInvestment error: ${error.stack}`)
+      console.error(`createInvestment error: ${error.stack}`);
+      throw new Error('Failed to create investment');
     }
   },
   patchInvestment: async (investmentId: string, updateData: any) => {
@@ -30,7 +32,8 @@ export const investmentRepository = {
       await investCollection.doc(investmentId).update(updateData);
       return
     } catch (error: any) {
-      console.error(`patchInvestment error: ${error.stack}`)
+      console.error(`patchInvestment error: ${error.stack}`);
+      throw new Error('Failed to update investment');
     }
   },
   softDeleteInvestment: async (investmentId: string) => {
@@ -40,7 +43,8 @@ export const investmentRepository = {
       });
       return;
     } catch (error: any) {
-      console.error(`softDeleteInvestment error: ${error.stack}`)
+      console.error(`softDeleteInvestment error: ${error.stack}`);
+      throw new Error('Failed to delete investment');
     }
   }
 }
