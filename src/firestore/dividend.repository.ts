@@ -4,11 +4,44 @@ import { db } from "./firebase";
 const dividendCollection = db.collection('dividends');
 
 export const dividendRepository = {
-  getDividendsByInvestId: async (investmentId: string) => {
+  getActiveDividendsByInvestId: async (investmentId: string) => {
     try {
-
+      const snapshot = await dividendCollection
+        .where('deletedAt', '==', null)
+        .where('investmentId', '==', investmentId)
+        .get();
+      const dividends = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return dividends;
     } catch (error: any) {
-      console.error(`getDividendsByInvestId error: ${error.stack}`);
+      console.error(`getActiveDividendsByInvestId error: ${error.stack}`);
+    }
+  },
+  createDividend: async (createData: any) => {
+    try {
+      const createdResult = await dividendCollection.add(createData);
+      return createdResult
+    } catch (error: any) {
+      console.error(`createDividend error: ${error.stack}`);
+    }
+  },
+  updateDividend: async (dividendsId: string, updateData: any) => {
+    try {
+      await dividendCollection.doc(dividendsId).update(updateData);
+      return;
+    } catch (error: any) {
+      console.error(`updateDividend error: ${error.stack}`);
+    }
+  },
+  softDeleteDividendById: async (dividendId: string) => {
+    try {
+      await dividendCollection.doc(dividendId).update({
+        deletedAt: new Date().toISOString(),
+      })
+    } catch (error: any) {
+      console.error(`softDeleteDividendById error: ${error.stack}`);
     }
   },
   softDeleteDividendsByInvestId: async (investmentId: string) => {

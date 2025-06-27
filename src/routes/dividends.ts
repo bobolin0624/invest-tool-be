@@ -1,5 +1,6 @@
 import Router from "koa-router";
 import { db } from "../firestore/firebase";
+import { dividendRepository } from "../firestore/dividend.repository";
 
 const router = new Router();
 
@@ -25,18 +26,7 @@ router.get('/investments/:id/dividends',
   async (ctx) => {
     try {
       const investmentId = ctx.params.id;
-      const dividendsRef = db.collection('dividends');
-      const snapshot = await dividendsRef.where('investmentId', '==', investmentId).get();
-      if (snapshot.empty) {
-        return ctx.body = {
-          status: 'ok',
-          message: 'No matching documents',
-        };
-      }
-      const dividendsOfInvestment = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const dividendsOfInvestment = await dividendRepository.getActiveDividendsByInvestId(investmentId);
       ctx.body = {
         status: 'ok',
         data: dividendsOfInvestment,
@@ -90,14 +80,16 @@ router.post('/investments/:id/dividends',
       const createData = ctx.request.body as Object;
       const newDividend = {
         ...createData,
+        deletedAt: null,
         investmentId,
         createdAt: new Date().toISOString(),
       }
-      const createdResult = await db.collection('dividends').add(newDividend);
+      const createdResult = await dividendRepository.createDividend(newDividend);
+
       ctx.body = {
         status: 'ok',
         data: {
-          id: createdResult.id,
+          id: createdResult!.id,
           ...newDividend,
         }
       }
@@ -147,7 +139,7 @@ router.patch('/dividends/:id', async (ctx) => {
       ...updateData,
       updatedAt: new Date().toISOString(),
     }
-    await db.collection('dividends').doc(dividendsId).update(patchDividend);
+    await dividendRepository.updateDividend(dividendsId, patchDividend);
     ctx.body = {
       status: 'ok',
     }
@@ -178,7 +170,7 @@ router.patch('/dividends/:id', async (ctx) => {
 router.delete('/dividends/:id', async (ctx) => {
   try {
     const dividendId = ctx.params.id;
-    await db.collection('dividends').doc(dividendId).delete();
+    await dividendRepository.softDeleteDividendById(dividendId);
     ctx.body = {
       status: 'ok',
     };
