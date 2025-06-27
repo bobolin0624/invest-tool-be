@@ -133,13 +133,13 @@ router.post('/investments/:id/dividends',
  */
 router.patch('/dividends/:id', async (ctx) => {
   try {
-    const dividendsId = ctx.params.id;
+    const dividendId = ctx.params.id;
     const updateData = ctx.request.body as Object;
     const patchDividend = {
       ...updateData,
       updatedAt: new Date().toISOString(),
     }
-    await dividendRepository.updateDividend(dividendsId, patchDividend);
+    await dividendRepository.updateDividend(dividendId, patchDividend);
     ctx.body = {
       status: 'ok',
     }

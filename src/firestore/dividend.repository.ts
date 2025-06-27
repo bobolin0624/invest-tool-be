@@ -29,9 +29,9 @@ export const dividendRepository = {
       throw new Error('Failed to create dividend');
     }
   },
-  updateDividend: async (dividendsId: string, updateData: any) => {
+  updateDividend: async (dividendId: string, updateData: any) => {
     try {
-      await dividendCollection.doc(dividendsId).update(updateData);
+      await dividendCollection.doc(dividendId).update(updateData);
       return;
     } catch (error: any) {
       console.error(`updateDividend error: ${error.stack}`);
