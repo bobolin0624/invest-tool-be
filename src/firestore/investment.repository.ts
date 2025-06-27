@@ -35,7 +35,10 @@ export const investmentRepository = {
   },
   softDeleteInvestment: async (investmentId: string) => {
     try {
-      
+      await investCollection.doc(investmentId).update({
+        deletedAt: new Date().toISOString(),
+      });
+      return;
     } catch (error: any) {
       console.error(`softDeleteInvestment error: ${error.stack}`)
     }

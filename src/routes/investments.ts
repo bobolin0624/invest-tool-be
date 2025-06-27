@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { db } from "../firestore/firebase";
 import { investmentRepository } from "../firestore/investment.repository";
+import { dividendRepository } from "../firestore/dividend.repository";
 
 const router = new Router();
 
@@ -172,12 +173,8 @@ router.patch('/investments/:id', async (ctx) => {
 router.delete('/investments/:id', async (ctx) => {
   try {
     const investmentId = ctx.params.id;
-    // TODO 一併刪除 investments 底下的 dividends
-    // trash 做軟刪除
-    await db.collection('investments').doc(investmentId).update({
-      deletedAt: new Date().toISOString(),
-    });
-
+    await investmentRepository.softDeleteInvestment(investmentId);
+    await dividendRepository.softDeleteDividendsByInvestId(investmentId);
     ctx.body = {
       status: 'ok',
     };
