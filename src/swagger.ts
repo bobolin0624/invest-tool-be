@@ -12,6 +12,9 @@ export const swaggerSpec = swaggerJSDoc({
       {
         url: 'http://localhost:5002',
       },
+      {
+        url: 'https://invest-tool-api.onrender.com'
+      }
     ],
   },
   apis: ['./src/routes/**/*.ts'],
