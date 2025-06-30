@@ -155,7 +155,7 @@ router.patch('/investments/:id', async (ctx) => {
 /**
  * @swagger
  * /investments/{id}:
- *  patch:
+ *  delete:
  *    summary: Delete investment by id
  *    tags: 
  *    - Investments
