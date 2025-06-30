@@ -1,6 +1,7 @@
 import Router from "koa-router";
 import { db } from "../firestore/firebase";
 import { dividendRepository } from "../firestore/dividend.repository";
+import { investmentRepository } from "../firestore/investment.repository";
 
 const router = new Router();
 
@@ -25,11 +26,16 @@ const router = new Router();
 router.get('/investments/:id/dividends',
   async (ctx) => {
     try {
+      // TODO add investment info
       const investmentId = ctx.params.id;
+      const investmentInfo = await investmentRepository.getInvestmentById(investmentId);
       const dividendsOfInvestment = await dividendRepository.getActiveDividendsByInvestId(investmentId);
       ctx.body = {
         status: 'ok',
-        data: dividendsOfInvestment,
+        data: {
+          investmentInfo,
+          dividends: dividendsOfInvestment,
+        },
       };
     } catch (error: any) {
       console.error(error.stack);

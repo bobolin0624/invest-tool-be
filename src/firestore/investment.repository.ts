@@ -18,6 +18,19 @@ export const investmentRepository = {
       throw new Error('Failed to fetch investments');
     }
   },
+  getInvestmentById: async (investmentId: string) => {
+    try {
+      const investmentSnapshot = await investCollection.doc(investmentId).get();
+      const investment = {
+        id: investmentSnapshot.id,
+        ...investmentSnapshot.data(),
+      }
+      return investment;
+    } catch (error: any) {
+      console.error(`getInvestmentById error: ${error.stack}`);
+      throw new Error('Failed to fetch investment');
+    }
+  },
   createInvestment: async (createData: any) => {
     try {
       const createdResult = await investCollection.add(createData);
