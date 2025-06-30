@@ -75,6 +75,7 @@ router.post('/investments', async (ctx) => {
     const newInvestment = {
       ...createData,
       createdAt: new Date().toISOString(),
+      deletedAt: null,
     }
     const createdResult = await investmentRepository.createInvestment(newInvestment);
     if (createdResult) {
@@ -82,7 +83,6 @@ router.post('/investments', async (ctx) => {
         status: 'ok',
         data: {
           id: createdResult.id,
-          deletedAt: null,
           ...newInvestment,
         }
       }
